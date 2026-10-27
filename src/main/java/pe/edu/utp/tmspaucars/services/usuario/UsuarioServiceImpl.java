@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UsuarioServiceImpl implements UsuarioService {
+public class  UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
@@ -100,11 +100,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     public void eliminar(Integer id) {
         Preconditions.checkArgument(id != null, "El ID del usuario es obligatorio");
 
-        Preconditions.checkState(
-                usuarioRepository.existsById(id),
-                "No se puede eliminar porque el usuario no existe"
-        );
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
 
-        usuarioRepository.deleteById(id);
+        usuario.setEstado(0);
+        usuarioRepository.save(usuario);
     }
 }
