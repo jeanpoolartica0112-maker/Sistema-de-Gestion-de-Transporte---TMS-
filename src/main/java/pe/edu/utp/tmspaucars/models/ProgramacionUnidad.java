@@ -1,5 +1,4 @@
 package pe.edu.utp.tmspaucars.models;
-import pe.edu.utp.tmspaucars.services.programacion.EstadoProgramacion;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -35,7 +35,6 @@ public class UnidadServiceImpl implements UnidadService {
         Preconditions.checkArgument(!unidadRepository.existsById(dto.placa()),
                 "La unidad con placa %s ya está registrada", dto.placa());
 
-        // 2. Mapear
         Unidad unidad = Unidad.builder()
                 .placa(dto.placa())
                 .tipo(dto.tipo())
@@ -79,6 +78,7 @@ public class UnidadServiceImpl implements UnidadService {
         unidad.setFechaSoat(dto.fechaSoat());
         unidad.setFechaRevisionTecnica(dto.fechaRevisionTecnica());
         unidad.setFechaPermisoMtc(dto.fechaPermisoMtc());
+
 
         Unidad actualizada = unidadRepository.save(unidad);
         log.info("Unidad {} actualizada", placa);

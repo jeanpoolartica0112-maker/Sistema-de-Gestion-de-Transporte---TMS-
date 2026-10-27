@@ -1,5 +1,6 @@
 package pe.edu.utp.tmspaucars.services.programacion;
 
+import com.google.common.base.Preconditions;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import pe.edu.utp.tmspaucars.dao.ProgramacionRepository;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionResponseDTO;
+import pe.edu.utp.tmspaucars.models.EstadoProgramacion;
 import pe.edu.utp.tmspaucars.models.ProgramacionUnidad;
 import pe.edu.utp.tmspaucars.services.programacion.interfaces.ProgramacionService;
 import pe.edu.utp.tmspaucars.services.programacion.validations.ValidacionProgramacion;
@@ -87,5 +89,36 @@ public class ProgramacionServiceImpl implements ProgramacionService {
         }
         programacionRepository.deleteById(id);
         log.info("Programación con ID {} eliminada exitosamente", id);
+    }
+
+
+    @Override
+    @Transactional
+    public ProgramacionResponseDTO cambiarEstado(Integer id, EstadoProgramacion nuevoEstado) {
+        ProgramacionUnidad viaje = programacionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No se encontró el viaje con ID: " + id));
+
+        EstadoProgramacion estadoActual = viaje.getEstadoProgramacion();
+
+        Preconditions.checkArgument(estadoActual != EstadoProgramacion.ENTREGADO,
+                "Un viaje ENTREGADO ya no puede cambiar de estado.");
+
+        Preconditions.checkArgument(estadoActual != EstadoProgramacion.CANCELADO,
+                "Un viaje CANCELADO ya no puede cambiar de estado.");
+
+        if (estadoActual == EstadoProgramacion.PROGRAMADO) {
+            Preconditions.checkArgument(nuevoEstado == EstadoProgramacion.EN_RUTA || nuevoEstado == EstadoProgramacion.CANCELADO,
+                    "Desde PROGRAMADO solo se puede pasar a EN_RUTA o CANCELADO.");
+        } else if (estadoActual == EstadoProgramacion.EN_RUTA) {
+            Preconditions.checkArgument(nuevoEstado == EstadoProgramacion.ENTREGADO,
+                    "Desde EN_RUTA solo se puede pasar a ENTREGADO.");
+        }
+
+
+        viaje.setEstadoProgramacion(nuevoEstado);
+        ProgramacionUnidad actualizado = programacionRepository.save(viaje);
+
+        log.info("El viaje {} cambió de estado de {} a {}", actualizado.getCodigoViaje(), estadoActual, nuevoEstado);
+        return ProgramacionResponseDTO.from(actualizado);
     }
 }
