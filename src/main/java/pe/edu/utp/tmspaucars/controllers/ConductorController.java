@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.utp.tmspaucars.models.Conductor;
-import pe.edu.utp.tmspaucars.services.ConductorService;
+import pe.edu.utp.tmspaucars.services.conductor.ConductorService;
 
 import java.util.List;
 

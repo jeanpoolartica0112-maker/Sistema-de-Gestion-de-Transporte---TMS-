@@ -8,7 +8,6 @@ import pe.edu.utp.tmspaucars.dao.ProgramacionRepository;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionResponseDTO;
 import pe.edu.utp.tmspaucars.models.ProgramacionUnidad;
-import pe.edu.utp.tmspaucars.services.EstadoProgramacion;
 import pe.edu.utp.tmspaucars.services.programacion.interfaces.ProgramacionService;
 import pe.edu.utp.tmspaucars.services.programacion.validations.ValidacionProgramacion;
 

@@ -11,4 +11,5 @@ import java.util.List;
 public interface ProgramacionRepository extends JpaRepository<ProgramacionUnidad, Integer> {
     List<ProgramacionUnidad> findByTracto(String tracto);
     List<ProgramacionUnidad> findByIdConductor(String idConductor);
+    boolean existsByIdConductor(String idConductor);
 }

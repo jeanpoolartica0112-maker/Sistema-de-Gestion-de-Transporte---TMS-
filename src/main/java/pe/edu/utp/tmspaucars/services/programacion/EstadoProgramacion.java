@@ -1,4 +1,4 @@
-package pe.edu.utp.tmspaucars.services;
+package pe.edu.utp.tmspaucars.services.programacion;
 
 public enum EstadoProgramacion {
     PROGRAMADO,

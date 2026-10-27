@@ -1,8 +1,7 @@
 package pe.edu.utp.tmspaucars.dtos;
 
-import org.apache.commons.lang3.StringUtils;
 import pe.edu.utp.tmspaucars.models.ProgramacionUnidad;
-import pe.edu.utp.tmspaucars.services.EstadoProgramacion;
+import pe.edu.utp.tmspaucars.services.programacion.EstadoProgramacion;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

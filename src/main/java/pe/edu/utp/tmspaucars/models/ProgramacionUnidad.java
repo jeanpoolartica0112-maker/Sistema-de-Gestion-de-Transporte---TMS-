@@ -1,9 +1,9 @@
 package pe.edu.utp.tmspaucars.models;
-import pe.edu.utp.tmspaucars.services.EstadoProgramacion;
+import pe.edu.utp.tmspaucars.services.programacion.EstadoProgramacion;
 
 import jakarta.persistence.*;
 import lombok.*;
-import pe.edu.utp.tmspaucars.services.EstadoProgramacion;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
