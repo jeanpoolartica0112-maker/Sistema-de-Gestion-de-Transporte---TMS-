@@ -1,11 +1,12 @@
 package pe.edu.utp.tmspaucars.services.usuario;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pe.edu.utp.tmspaucars.dao.UsuarioRepository;
 import pe.edu.utp.tmspaucars.dtos.UsuarioRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.UsuarioResponseDTO;
 import pe.edu.utp.tmspaucars.models.Usuario;
-import pe.edu.utp.tmspaucars.dao.UsuarioRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,9 +19,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO dto) {
-        if (dto.username() == null || dto.username().isEmpty()) {
-            throw new IllegalArgumentException("El username es obligatorio");
-        }
+        Preconditions.checkArgument(
+                dto != null && dto.username() != null && !dto.username().isEmpty(),
+                "El DTO y el username son obligatorios"
+        );
 
         Usuario usuario = new Usuario();
         usuario.setUsername(dto.username());
@@ -29,48 +31,37 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setRol(dto.rol());
         usuario.setEstado(dto.estado());
 
-        Usuario guardado = usuarioRepository.save(usuario);
-        return mapToResponse(guardado);
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+
+        return new UsuarioResponseDTO(
+                usuarioGuardado.getIdUsuario(),
+                usuarioGuardado.getUsername(),
+                usuarioGuardado.getNombreCompleto(),
+                usuarioGuardado.getRol(),
+                usuarioGuardado.getEstado()
+        );
     }
 
     @Override
     public List<UsuarioResponseDTO> listarTodos() {
         return usuarioRepository.findAll().stream()
-                .map(this::mapToResponse)
+                .map(usuario -> new UsuarioResponseDTO(
+                        usuario.getIdUsuario(),
+                        usuario.getUsername(),
+                        usuario.getNombreCompleto(),
+                        usuario.getRol(),
+                        usuario.getEstado()
+                ))
                 .collect(Collectors.toList());
     }
 
     @Override
     public UsuarioResponseDTO obtenerPorId(Integer id) {
+        Preconditions.checkArgument(id != null, "El ID del usuario es obligatorio");
+
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
-        return mapToResponse(usuario);
-    }
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
 
-    @Override
-    public UsuarioResponseDTO actualizar(Integer id, UsuarioRequestDTO dto) {
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
-
-        usuario.setUsername(dto.username());
-        usuario.setPassword(dto.password());
-        usuario.setNombreCompleto(dto.nombreCompleto());
-        usuario.setRol(dto.rol());
-        usuario.setEstado(dto.estado());
-
-        Usuario actualizado = usuarioRepository.save(usuario);
-        return mapToResponse(actualizado);
-    }
-
-    @Override
-    public void eliminar(Integer id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new RuntimeException("Usuario no encontrado con ID: " + id);
-        }
-        usuarioRepository.deleteById(id);
-    }
-
-    private UsuarioResponseDTO mapToResponse(Usuario usuario) {
         return new UsuarioResponseDTO(
                 usuario.getIdUsuario(),
                 usuario.getUsername(),
@@ -78,5 +69,42 @@ public class UsuarioServiceImpl implements UsuarioService {
                 usuario.getRol(),
                 usuario.getEstado()
         );
+    }
+
+    @Override
+    public UsuarioResponseDTO actualizar(Integer id, UsuarioRequestDTO dto) {
+        Preconditions.checkArgument(id != null, "El ID del usuario es obligatorio");
+        Preconditions.checkArgument(dto != null, "Los datos de actualización son obligatorios");
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
+
+        usuario.setUsername(dto.username());
+        usuario.setPassword(dto.password());
+        usuario.setNombreCompleto(dto.nombreCompleto());
+        usuario.setRol(dto.rol());
+        usuario.setEstado(dto.estado());
+
+        Usuario usuarioActualizado = usuarioRepository.save(usuario);
+
+        return new UsuarioResponseDTO(
+                usuarioActualizado.getIdUsuario(),
+                usuarioActualizado.getUsername(),
+                usuarioActualizado.getNombreCompleto(),
+                usuarioActualizado.getRol(),
+                usuarioActualizado.getEstado()
+        );
+    }
+
+    @Override
+    public void eliminar(Integer id) {
+        Preconditions.checkArgument(id != null, "El ID del usuario es obligatorio");
+
+        Preconditions.checkState(
+                usuarioRepository.existsById(id),
+                "No se puede eliminar porque el usuario no existe"
+        );
+
+        usuarioRepository.deleteById(id);
     }
 }
