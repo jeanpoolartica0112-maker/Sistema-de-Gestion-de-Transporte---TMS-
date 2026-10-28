@@ -2,6 +2,7 @@ package pe.edu.utp.tmspaucars.services.usuario;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.tmspaucars.dao.UsuarioRepository;
 import pe.edu.utp.tmspaucars.dtos.UsuarioRequestDTO;
@@ -13,9 +14,10 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class  UsuarioServiceImpl implements UsuarioService {
+public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO dto) {
@@ -26,7 +28,8 @@ public class  UsuarioServiceImpl implements UsuarioService {
 
         Usuario usuario = new Usuario();
         usuario.setUsername(dto.username());
-        usuario.setPassword(dto.password());
+        // Hasheamos la contraseña antes de guardarla
+        usuario.setPassword(passwordEncoder.encode(dto.password()));
         usuario.setNombreCompleto(dto.nombreCompleto());
         usuario.setRol(dto.rol());
         usuario.setEstado(dto.estado());
@@ -80,7 +83,7 @@ public class  UsuarioServiceImpl implements UsuarioService {
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
 
         usuario.setUsername(dto.username());
-        usuario.setPassword(dto.password());
+        usuario.setPassword(passwordEncoder.encode(dto.password()));
         usuario.setNombreCompleto(dto.nombreCompleto());
         usuario.setRol(dto.rol());
         usuario.setEstado(dto.estado());
