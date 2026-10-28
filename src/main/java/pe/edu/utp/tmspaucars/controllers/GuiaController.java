@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pe.edu.utp.tmspaucars.dtos.GuiaRequestDTO;
 import pe.edu.utp.tmspaucars.models.EstadoProgramacion;
 import pe.edu.utp.tmspaucars.services.guia.GuiaService;
-import pe.edu.utp.tmspaucars.services.programacion.interfaces.ProgramacionService;
+import pe.edu.utp.tmspaucars.services.programacion.ProgramacionService;
 
 @RestController
 @RequestMapping("/api/guias")

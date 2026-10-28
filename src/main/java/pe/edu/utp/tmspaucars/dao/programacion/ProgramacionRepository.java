@@ -1,5 +1,4 @@
-package pe.edu.utp.tmspaucars.dao;
-
+package pe.edu.utp.tmspaucars.dao.programacion;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

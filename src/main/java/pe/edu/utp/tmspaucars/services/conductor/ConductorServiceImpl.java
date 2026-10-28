@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.tmspaucars.dao.ConductorRepository;
-import pe.edu.utp.tmspaucars.dao.ProgramacionRepository;
+import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionRepository;
 import pe.edu.utp.tmspaucars.models.Conductor;
 
 import java.util.List;

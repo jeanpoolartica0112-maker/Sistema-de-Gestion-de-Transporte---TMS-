@@ -2,7 +2,7 @@ package pe.edu.utp.tmspaucars.services.guia.validations;
 
 import com.google.common.base.Preconditions;
 import org.springframework.stereotype.Component;
-import pe.edu.utp.tmspaucars.dao.ProgramacionRepository;
+import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionRepository;
 import pe.edu.utp.tmspaucars.dtos.GuiaRequestDTO;
 import pe.edu.utp.tmspaucars.models.ProgramacionUnidad;
 import pe.edu.utp.tmspaucars.models.EstadoProgramacion;
