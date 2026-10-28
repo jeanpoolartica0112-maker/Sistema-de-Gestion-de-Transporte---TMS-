@@ -28,7 +28,7 @@ public class ClienteController {
 
     @GetMapping
     public ResponseEntity<List<ClienteResponseDTO>> listar() {
-        return ResponseEntity.ok(clienteService.listarTodos());
+        return ResponseEntity.ok(clienteService.listarPrimeros25());
     }
 
     @GetMapping("/{ruc}")

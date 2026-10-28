@@ -9,9 +9,10 @@ import java.util.List;
 
 public interface ClienteService {
     Cliente crearCliente(ClienteRequestDTO dto);
-    List<ClienteResponseDTO> listarTodos();
+    List<ClienteResponseDTO> listarPrimeros25();
     ClienteResponseDTO obtenerPorRuc(String ruc);
     ClienteResponseDTO actualizar(String ruc, ClienteRequestDTO dto);
     void eliminar(String ruc);
+
 }
 

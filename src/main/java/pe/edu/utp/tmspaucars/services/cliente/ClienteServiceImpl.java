@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.tmspaucars.dao.ClienteRepository;
+import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionRepository;
 import pe.edu.utp.tmspaucars.dtos.ClienteRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ClienteResponseDTO;
 import pe.edu.utp.tmspaucars.models.Cliente;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class ClienteServiceImpl implements ClienteService {
 
     private final ClienteRepository clienteRepository;
+    private final ProgramacionRepository programacionRepository;
 
     @Override
     public Cliente crearCliente(ClienteRequestDTO dto) {
@@ -45,12 +47,11 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public List<ClienteResponseDTO> listarTodos() {
-        return clienteRepository.findAll().stream()
+    public List<ClienteResponseDTO> listarPrimeros25() {
+        return clienteRepository.findTop25ByOrderByRazonSocialAsc().stream()
                 .map(ClienteResponseDTO::from)
                 .collect(Collectors.toList());
     }
-
     @Override
     public ClienteResponseDTO obtenerPorRuc(String ruc) {
         return clienteRepository.findById(ruc)
@@ -80,8 +81,15 @@ public class ClienteServiceImpl implements ClienteService {
     @Transactional
     public void eliminar(String ruc) {
         if (!clienteRepository.existsById(ruc)) {
-            throw new RuntimeException("No se puede eliminar. Cliente no encontrado con RUC: " + ruc);
+            throw new RuntimeException("No se puede eliminar.\n* Cliente no encontrado en la base de datos\n* " +
+                    "Ya fue borrado por otro usuario");
         }
+
+        Preconditions.checkState(
+                !programacionRepository.existsByRuc(ruc),
+                "No se puede eliminar el cliente.\nPorque ya esta asignado a una programación."
+        );
+
         clienteRepository.deleteById(ruc);
         log.info("Cliente {} eliminado", ruc);
     }
