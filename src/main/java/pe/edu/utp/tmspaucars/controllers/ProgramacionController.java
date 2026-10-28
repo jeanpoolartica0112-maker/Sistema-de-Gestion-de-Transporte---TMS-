@@ -6,9 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionResponseDTO;
-import pe.edu.utp.tmspaucars.services.programacion.interfaces.ProgramacionService;
+import pe.edu.utp.tmspaucars.services.programacion.ProgramacionService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/programaciones")
@@ -21,7 +22,6 @@ public class ProgramacionController {
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody ProgramacionRequestDTO dto) {
         try {
-
             ProgramacionResponseDTO response = programacionService.crear(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
@@ -30,11 +30,17 @@ public class ProgramacionController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<List<ProgramacionResponseDTO>> listarTodas() {
-        return ResponseEntity.ok(programacionService.listarTodas());
-    }
+//    @GetMapping
+//    public ResponseEntity<List<ProgramacionResponseDTO>> listarTodas() {
+//        return ResponseEntity.ok(programacionService.listarTodas());
+//    }
 
+
+//    @GetMapping("/fletes-crudos")
+    @GetMapping
+    public ResponseEntity<List<Map<String, Object>>> listarFletesCrudos() {
+        return ResponseEntity.ok(programacionService.listarFletesCrudos());
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Integer id) {
@@ -44,7 +50,6 @@ public class ProgramacionController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
 
     @GetMapping("/placa/{placa}")
     public ResponseEntity<?> obtenerPorPlaca(@PathVariable String placa) {

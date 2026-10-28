@@ -5,15 +5,16 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import pe.edu.utp.tmspaucars.dao.ProgramacionRepository;
+import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionRepository;
+import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionReporteDao;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionResponseDTO;
 import pe.edu.utp.tmspaucars.models.EstadoProgramacion;
 import pe.edu.utp.tmspaucars.models.ProgramacionUnidad;
-import pe.edu.utp.tmspaucars.services.programacion.interfaces.ProgramacionService;
 import pe.edu.utp.tmspaucars.services.programacion.validations.ValidacionProgramacion;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class ProgramacionServiceImpl implements ProgramacionService {
 
     private final ProgramacionRepository programacionRepository;
+    private final ProgramacionReporteDao programacionReporteDao;
     private final List<ValidacionProgramacion> validaciones;
 
     @Override
@@ -48,12 +50,16 @@ public class ProgramacionServiceImpl implements ProgramacionService {
         return ProgramacionResponseDTO.from(guardada);
     }
 
-
     @Override
     public List<ProgramacionResponseDTO> listarTodas() {
         return programacionRepository.findAll().stream()
                 .map(ProgramacionResponseDTO::from)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Map<String, Object>> listarFletesCrudos() {
+        return programacionReporteDao.listarFletesCrudos();
     }
 
     @Override
