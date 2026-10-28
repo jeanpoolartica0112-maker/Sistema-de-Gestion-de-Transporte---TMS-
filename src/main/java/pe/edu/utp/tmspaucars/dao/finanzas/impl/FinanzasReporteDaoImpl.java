@@ -36,3 +36,4 @@ public class FinanzasReporteDaoImpl implements FinanzasReporteDao {
         return jdbcTemplate.queryForList(sql);
     }
 }
+
