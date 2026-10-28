@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionResponseDTO;
+import pe.edu.utp.tmspaucars.dtos.programacion.FiltroViajeDTO;
 import pe.edu.utp.tmspaucars.services.programacion.ProgramacionService;
 
 import java.util.List;
@@ -30,16 +31,10 @@ public class ProgramacionController {
         }
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<ProgramacionResponseDTO>> listarTodas() {
-//        return ResponseEntity.ok(programacionService.listarTodas());
-//    }
 
-
-//    @GetMapping("/fletes-crudos")
-    @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> listarFletesCrudos() {
-        return ResponseEntity.ok(programacionService.listarFletesCrudos());
+    @PostMapping("/fletes/filtro")
+    public ResponseEntity<Map<String, Object>> listarFletesFiltrados(@RequestBody FiltroViajeDTO filtro) {
+        return ResponseEntity.ok(programacionService.listarFletesPaginados(filtro));
     }
 
     @GetMapping("/{id}")

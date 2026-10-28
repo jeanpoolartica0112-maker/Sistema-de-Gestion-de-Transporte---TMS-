@@ -9,6 +9,7 @@ import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionRepository;
 import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionReporteDao;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionResponseDTO;
+import pe.edu.utp.tmspaucars.dtos.programacion.FiltroViajeDTO;
 import pe.edu.utp.tmspaucars.models.EstadoProgramacion;
 import pe.edu.utp.tmspaucars.models.ProgramacionUnidad;
 import pe.edu.utp.tmspaucars.services.programacion.validations.ValidacionProgramacion;
@@ -57,9 +58,10 @@ public class ProgramacionServiceImpl implements ProgramacionService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
-    public List<Map<String, Object>> listarFletesCrudos() {
-        return programacionReporteDao.listarFletesCrudos();
+    public Map<String, Object> listarFletesPaginados(FiltroViajeDTO filtro) {
+        return programacionReporteDao.listarFletesPaginados(filtro);
     }
 
     @Override
