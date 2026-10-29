@@ -5,6 +5,6 @@ import pe.edu.utp.tmspaucars.dtos.GuiaResponseDTO;
 import java.util.List;
 
 public interface GuiaService {
-    GuiaResponseDTO crear(GuiaRequestDTO dto);
-    List<GuiaResponseDTO> listarPorViaje(Integer codigoViaje);
+    GuiaResponseDTO crearGuia(GuiaRequestDTO dto);
+    List<GuiaResponseDTO> obtenerPorViaje(Integer codigoViaje);
 }

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionResponseDTO;
+import pe.edu.utp.tmspaucars.dtos.programacion.FiltroMonitoreoDTO;
 import pe.edu.utp.tmspaucars.dtos.programacion.FiltroViajeDTO;
 import pe.edu.utp.tmspaucars.services.programacion.ProgramacionService;
 
@@ -25,17 +26,28 @@ public class ProgramacionController {
         try {
             ProgramacionResponseDTO response = programacionService.crear(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizar(@PathVariable Integer id, @RequestBody ProgramacionRequestDTO dto) {
+        try {
+            ProgramacionResponseDTO response = programacionService.actualizar(id, dto);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
     @PostMapping("/fletes/filtro")
     public ResponseEntity<Map<String, Object>> listarFletesFiltrados(@RequestBody FiltroViajeDTO filtro) {
         return ResponseEntity.ok(programacionService.listarFletesPaginados(filtro));
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Integer id) {
@@ -55,7 +67,6 @@ public class ProgramacionController {
         }
     }
 
-
     @GetMapping("/conductor/{dni}")
     public ResponseEntity<?> obtenerPorConductor(@PathVariable String dni) {
         try {
@@ -69,8 +80,8 @@ public class ProgramacionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Integer id) {
         try {
-            programacionService.eliminar(id);
-            return ResponseEntity.noContent().build(); // Retorna 204 No Content
+            programacionService.eliminarViaje(id);
+            return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }

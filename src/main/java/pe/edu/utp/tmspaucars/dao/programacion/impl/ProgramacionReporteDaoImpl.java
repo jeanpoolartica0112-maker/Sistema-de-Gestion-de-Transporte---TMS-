@@ -27,7 +27,9 @@ public class ProgramacionReporteDaoImpl implements ProgramacionReporteDao {
             JOIN clientes c ON p.ruc = c.ruc  
             JOIN conductores co ON p.id_conductor = co.id_conductor
             LEFT JOIN facturas_programacion fp on fp.codigo_viaje = p.codigo_viaje
+            left join facturas ft on ft.id_factura = fp.id_factura
             WHERE 1=1
+            order by p.codigo_viaje desc
             """);
 
         List<Object> parametros = new ArrayList<>();
@@ -58,7 +60,8 @@ public class ProgramacionReporteDaoImpl implements ProgramacionReporteDao {
                 concat(co.nombres, ' ', co.apellidos) AS nombre_conductor,
                 co.id_conductor, 
                 p.origen, p.destino, p.estado_programacion,
-                p.monto_flete, p.incidencia, fp.id_factura as facturado
+                p.monto_flete, p.incidencia, fp.id_factura as facturado,
+                ft.numero_factura
             """ + sqlBase.toString();
 
         // Calculamos el límite y el offset

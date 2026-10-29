@@ -5,10 +5,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import pe.edu.utp.tmspaucars.dao.facturasprogramacion.FacturaProgramacionRepository;
+import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionMonitoreoDao;
 import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionRepository;
 import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionReporteDao;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionResponseDTO;
+import pe.edu.utp.tmspaucars.dtos.programacion.FiltroMonitoreoDTO;
 import pe.edu.utp.tmspaucars.dtos.programacion.FiltroViajeDTO;
 import pe.edu.utp.tmspaucars.models.EstadoProgramacion;
 import pe.edu.utp.tmspaucars.models.ProgramacionUnidad;
@@ -18,14 +21,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class ProgramacionServiceImpl implements ProgramacionService {
+    @Slf4j
+    @Service
+    @RequiredArgsConstructor
+    public class ProgramacionServiceImpl implements ProgramacionService {
 
-    private final ProgramacionRepository programacionRepository;
-    private final ProgramacionReporteDao programacionReporteDao;
-    private final List<ValidacionProgramacion> validaciones;
+        private final ProgramacionRepository programacionRepository;
+        private final ProgramacionReporteDao programacionReporteDao;
+        private final ProgramacionMonitoreoDao programacionMonitoreoDao;
+        private final FacturaProgramacionRepository facturasProgramacionRepository;
+        private final List<ValidacionProgramacion> validaciones;
 
     @Override
     @Transactional
@@ -52,12 +57,49 @@ public class ProgramacionServiceImpl implements ProgramacionService {
     }
 
     @Override
-    public List<ProgramacionResponseDTO> listarTodas() {
-        return programacionRepository.findAll().stream()
-                .map(ProgramacionResponseDTO::from)
-                .collect(Collectors.toList());
+    @Transactional
+    public ProgramacionResponseDTO actualizar(Integer codigoViaje, ProgramacionRequestDTO dto) {
+        ProgramacionUnidad viajeExistente = programacionRepository.findById(codigoViaje)
+                .orElseThrow(() -> new RuntimeException("No se encontró el viaje con ID: " + codigoViaje));
+
+        validaciones.forEach(validacion -> validacion.validar(dto));
+
+        Preconditions.checkState(
+            !facturasProgramacionRepository.existsByCodigoViaje(codigoViaje),
+            "No se puede actualizar el viaje, porque ya se encuentra facturado."
+        );
+
+        // Validar que solo se pueda editar si está PROGRAMADO
+        Preconditions.checkArgument(
+            viajeExistente.getEstadoProgramacion() == EstadoProgramacion.PROGRAMADO,
+            "Solo se pueden editar viajes en estado PROGRAMADO.\nEl viaje actual está %s",
+            viajeExistente.getEstadoProgramacion()
+        );
+
+        viajeExistente.setRuc(dto.ruc());
+        viajeExistente.setFechaProgramacion(dto.fechaProgramacion());
+        viajeExistente.setTracto(dto.tracto());
+        viajeExistente.setAcoplado(dto.acoplado());
+        viajeExistente.setIdConductor(dto.idConductor());
+        viajeExistente.setOrigen(dto.origen());
+        viajeExistente.setDestino(dto.destino());
+        viajeExistente.setMontoFlete(dto.montoFlete());
+//        viajeExistente.setIdUsuario(dto.idUsuario());
+
+        ProgramacionUnidad actualizado = programacionRepository.save(viajeExistente);
+        log.info("Viaje {} actualizado correctamente", actualizado.getCodigoViaje());
+
+        return ProgramacionResponseDTO.from(actualizado);
     }
 
+//
+//    @Override
+//    public List<ProgramacionResponseDTO> listarTodas() {
+//        return programacionRepository.findAll().stream()
+//                .map(ProgramacionResponseDTO::from)
+//                .collect(Collectors.toList());
+//    }
+//
 
     @Override
     public Map<String, Object> listarFletesPaginados(FiltroViajeDTO filtro) {
@@ -91,42 +133,18 @@ public class ProgramacionServiceImpl implements ProgramacionService {
 
     @Transactional
     @Override
-    public void eliminar(Integer id) {
+    public void eliminarViaje(Integer id) {
         if (!programacionRepository.existsById(id)) {
             throw new RuntimeException("No se puede eliminar. No existe la programación con ID: " + id);
         }
+
+        Preconditions.checkState(
+                !facturasProgramacionRepository.existsByCodigoViaje(id),
+                "No se puede eliminar el viaje.\nPorque ya esta asociado a una Factura."
+        );
+
         programacionRepository.deleteById(id);
         log.info("Programación con ID {} eliminada exitosamente", id);
     }
 
-
-    @Override
-    @Transactional
-    public ProgramacionResponseDTO cambiarEstado(Integer id, EstadoProgramacion nuevoEstado) {
-        ProgramacionUnidad viaje = programacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No se encontró el viaje con ID: " + id));
-
-        EstadoProgramacion estadoActual = viaje.getEstadoProgramacion();
-
-        Preconditions.checkArgument(estadoActual != EstadoProgramacion.ENTREGADO,
-                "Un viaje ENTREGADO ya no puede cambiar de estado.");
-
-        Preconditions.checkArgument(estadoActual != EstadoProgramacion.CANCELADO,
-                "Un viaje CANCELADO ya no puede cambiar de estado.");
-
-        if (estadoActual == EstadoProgramacion.PROGRAMADO) {
-            Preconditions.checkArgument(nuevoEstado == EstadoProgramacion.EN_RUTA || nuevoEstado == EstadoProgramacion.CANCELADO,
-                    "Desde PROGRAMADO solo se puede pasar a EN_RUTA o CANCELADO.");
-        } else if (estadoActual == EstadoProgramacion.EN_RUTA) {
-            Preconditions.checkArgument(nuevoEstado == EstadoProgramacion.ENTREGADO,
-                    "Desde EN_RUTA solo se puede pasar a ENTREGADO.");
-        }
-
-
-        viaje.setEstadoProgramacion(nuevoEstado);
-        ProgramacionUnidad actualizado = programacionRepository.save(viaje);
-
-        log.info("El viaje {} cambió de estado de {} a {}", actualizado.getCodigoViaje(), estadoActual, nuevoEstado);
-        return ProgramacionResponseDTO.from(actualizado);
-    }
 }
