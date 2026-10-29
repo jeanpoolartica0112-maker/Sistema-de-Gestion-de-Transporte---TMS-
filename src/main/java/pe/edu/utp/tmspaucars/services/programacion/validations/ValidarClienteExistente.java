@@ -1,7 +1,7 @@
 package pe.edu.utp.tmspaucars.services.programacion.validations;
 
 import org.springframework.stereotype.Component;
-import pe.edu.utp.tmspaucars.dao.ClienteRepository;
+import pe.edu.utp.tmspaucars.dao.clientes.ClienteRepository;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionRequestDTO;
 
 @Component

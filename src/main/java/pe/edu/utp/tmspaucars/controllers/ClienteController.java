@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.utp.tmspaucars.dao.clientes.ClienteReporteDao;
 import pe.edu.utp.tmspaucars.dtos.ClienteRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ClienteResponseDTO;
 import pe.edu.utp.tmspaucars.services.cliente.ClienteService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -16,6 +18,7 @@ import java.util.List;
 public class ClienteController {
 
     private final ClienteService clienteService;
+    private final ClienteReporteDao clienteReporteDao; // <--- Inyectamos el DAO de reportes para el filtro
 
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody ClienteRequestDTO dto) {
@@ -29,6 +32,13 @@ public class ClienteController {
     @GetMapping
     public ResponseEntity<List<ClienteResponseDTO>> listar() {
         return ResponseEntity.ok(clienteService.listarPrimeros25());
+    }
+
+    // nuevo edpoint
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Map<String, Object>>> listarClientesFiltro(@RequestParam(required = false) String filtro) {
+        List<Map<String, Object>> resultado = clienteReporteDao.listarClientesFiltro(filtro);
+        return ResponseEntity.ok(resultado);
     }
 
     @GetMapping("/{ruc}")

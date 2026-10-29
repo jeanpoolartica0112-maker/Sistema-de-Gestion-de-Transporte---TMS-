@@ -5,7 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import pe.edu.utp.tmspaucars.dao.ClienteRepository;
+import pe.edu.utp.tmspaucars.dao.clientes.ClienteRepository;
 import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionRepository;
 import pe.edu.utp.tmspaucars.dtos.ClienteRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ClienteResponseDTO;
