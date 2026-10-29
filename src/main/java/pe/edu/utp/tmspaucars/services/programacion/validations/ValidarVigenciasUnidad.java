@@ -16,15 +16,18 @@ public class ValidarVigenciasUnidad implements ValidacionProgramacion {
 
     @Override
     public void validar(ProgramacionRequestDTO programacion) {
-        Unidad unidad = unidadRepository.findById(programacion.tracto())
-                .orElseThrow(() -> new RuntimeException("Error: La unidad " + programacion.tracto() + " no existe."));
+        Unidad tracto = unidadRepository.findById(programacion.tracto())
+                .orElseThrow(() -> new RuntimeException("Error: El tracto " + programacion.tracto() + " no existe."));
+
+        Unidad acoplado = unidadRepository.findById(programacion.acoplado())
+                .orElseThrow(() -> new RuntimeException("Error: El acoplado " + programacion.acoplado() + " no existe."));
 
         LocalDate hoy = LocalDate.now();
-        if (unidad.getFechaSoat().isBefore(hoy)) {
-            throw new RuntimeException("Error: El SOAT de la unidad " + unidad.getPlaca() + " está vencido.");
+        if (tracto.getFechaSoat().isBefore(hoy)) {
+            throw new RuntimeException("Error: El SOAT de la unidad " + tracto.getPlaca() + " está vencido.");
         }
-        if (unidad.getFechaRevisionTecnica().isBefore(hoy)) {
-            throw new RuntimeException("Error: La Revisión Técnica de la unidad " + unidad.getPlaca() + " está vencida.");
+        if (tracto.getFechaRevisionTecnica().isBefore(hoy)) {
+            throw new RuntimeException("Error: La Revisión Técnica de la unidad " + tracto.getPlaca() + " está vencida.");
         }
     }
 }

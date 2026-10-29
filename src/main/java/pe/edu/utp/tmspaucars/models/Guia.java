@@ -6,8 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "guias")
-@Getter
-@Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Guia {
 
     @Id
@@ -18,8 +17,8 @@ public class Guia {
     @Column(name = "codigo_viaje", nullable = false)
     private Integer codigoViaje;
 
-    @Column(name = "tipo_guia", nullable = false, length = 2) // '09' o '31'
-    private String tipoGuia;
+    @Column(name = "tipo_guia", nullable = false, length = 2)
+    private String tipoGuia; // '09' o '31'
 
     @Column(name = "serie", length = 10)
     private String serie;
@@ -31,7 +30,7 @@ public class Guia {
     private String rutaImagen;
 
     @Column(name = "recibida", length = 2)
-    private String recibida;
+    private String recibida; // 'SI' o 'NO'
 
     @Column(name = "fecha_recibida")
     private LocalDateTime fechaRecibida;

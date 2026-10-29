@@ -24,7 +24,7 @@ public class ClienteReporteDaoImpl implements ClienteReporteDao {
                 "FROM clientes " +
                 "WHERE ruc LIKE ? OR razon_social LIKE ?";
 
-        String paramLike = "%" + (filtro != null ? filtro : "") + "%";
+        String paramLike = "%" + (filtro != null ? filtro : " ") + "%";
 
         return jdbcTemplate.queryForList(sql, paramLike, paramLike);
     }

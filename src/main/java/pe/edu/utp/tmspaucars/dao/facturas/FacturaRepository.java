@@ -6,4 +6,5 @@ import pe.edu.utp.tmspaucars.models.Factura;
 
 @Repository
 public interface FacturaRepository extends JpaRepository<Factura, Integer> {
+
 }
