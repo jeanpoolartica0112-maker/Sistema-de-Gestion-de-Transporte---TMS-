@@ -65,7 +65,7 @@ public class ProgramacionReporteDaoImpl implements ProgramacionReporteDao {
             """ + sqlBase.toString();
 
         // Calculamos el límite y el offset
-        int limite = (filtro.tamanioPagina() != null) ? filtro.tamanioPagina() : 50;
+        int limite = (filtro.tamanioPagina() != null) ? filtro.tamanioPagina() : 100;
         int pagina = (filtro.pagina() != null) ? filtro.pagina() : 0;
         int offset = pagina * limite;
 

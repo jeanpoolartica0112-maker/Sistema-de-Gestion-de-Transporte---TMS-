@@ -3,14 +3,14 @@ package pe.edu.utp.tmspaucars.dao.clientes.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import pe.edu.utp.tmspaucars.dao.clientes.ClienteReporteDao;
+import pe.edu.utp.tmspaucars.dao.clientes.ClienteListaDao;
 
 import java.util.List;
 import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
-public class ClienteReporteDaoImpl implements ClienteReporteDao {
+public class ClienteListaDaoImpl implements ClienteListaDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -27,5 +27,10 @@ public class ClienteReporteDaoImpl implements ClienteReporteDao {
         String paramLike = "%" + (filtro != null ? filtro : " ") + "%";
 
         return jdbcTemplate.queryForList(sql, paramLike, paramLike);
+    }
+
+    @Override
+    public Object existsById(String number) {
+        return null;
     }
 }

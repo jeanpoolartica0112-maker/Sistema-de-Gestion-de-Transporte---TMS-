@@ -1,5 +1,6 @@
 package pe.edu.utp.tmspaucars.dao.programacion.impl;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -64,8 +65,13 @@ public class ProgramacionMonitoreoDaoImpl implements ProgramacionMonitoreoDao {
             LIMIT ? OFFSET ?
             """;
 
+        Preconditions.checkArgument(filtro.pagina() == null || filtro.pagina() >= 0,
+                "La página no puede ser negativa.");
+        Preconditions.checkArgument(filtro.tamanioPagina() == null || (filtro.tamanioPagina() > 0 && filtro.tamanioPagina() <= 100),
+                "El tamaño de página debe estar entre 1 y 100.");
+
         // 5. Paginación
-        int limite = (filtro.tamanioPagina() != null) ? filtro.tamanioPagina() : 50;
+        int limite = (filtro.tamanioPagina() != null) ? filtro.tamanioPagina() : 100;
         int pagina = (filtro.pagina() != null) ? filtro.pagina() : 0;
         int offset = pagina * limite;
 

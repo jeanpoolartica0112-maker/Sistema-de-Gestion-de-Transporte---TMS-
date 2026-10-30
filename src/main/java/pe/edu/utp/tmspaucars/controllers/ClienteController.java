@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pe.edu.utp.tmspaucars.dao.clientes.ClienteReporteDao;
+import pe.edu.utp.tmspaucars.dao.clientes.ClienteListaDao;
 import pe.edu.utp.tmspaucars.dtos.ClienteRequestDTO;
 import pe.edu.utp.tmspaucars.dtos.ClienteResponseDTO;
 import pe.edu.utp.tmspaucars.services.cliente.ClienteService;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class ClienteController {
 
     private final ClienteService clienteService;
-    private final ClienteReporteDao clienteReporteDao; // <--- Inyectamos el DAO de reportes para el filtro
+    private final ClienteListaDao clienteReporteDao; // <--- Inyectamos el DAO de reportes para el filtro
 
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody ClienteRequestDTO dto) {

@@ -92,15 +92,6 @@ import java.util.stream.Collectors;
         return ProgramacionResponseDTO.from(actualizado);
     }
 
-//
-//    @Override
-//    public List<ProgramacionResponseDTO> listarTodas() {
-//        return programacionRepository.findAll().stream()
-//                .map(ProgramacionResponseDTO::from)
-//                .collect(Collectors.toList());
-//    }
-//
-
     @Override
     public Map<String, Object> listarFletesPaginados(FiltroViajeDTO filtro) {
         return programacionReporteDao.listarFletesPaginados(filtro);
