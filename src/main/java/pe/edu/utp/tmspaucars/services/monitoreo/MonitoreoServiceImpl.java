@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pe.edu.utp.tmspaucars.dao.GuiaRepository;
 import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionMonitoreoDao;
 import pe.edu.utp.tmspaucars.dao.programacion.ProgramacionRepository;
 import pe.edu.utp.tmspaucars.dtos.ProgramacionResponseDTO;
@@ -20,13 +21,13 @@ import java.util.Map;
 public class MonitoreoServiceImpl implements MonitoreoService {
 
     private final ProgramacionMonitoreoDao monitoreoDao;
-    private final ProgramacionRepository programacionRepository; // Reutilizas el repo para actualizar estados
+    private final ProgramacionRepository programacionRepository;
+    private final GuiaRepository guiaRepository;
 
     @Override
     public Map<String, Object> listarMonitoreoPaginados(FiltroMonitoreoDTO filtro) {
         return monitoreoDao.listarMonitoreoPaginados(filtro);
     }
-
 
     @Override
     @Transactional
@@ -38,13 +39,19 @@ public class MonitoreoServiceImpl implements MonitoreoService {
 
         Preconditions.checkArgument(estadoActual != EstadoProgramacion.ENTREGADO,
                 "Un viaje ENTREGADO ya no puede cambiar de estado.");
-
         Preconditions.checkArgument(estadoActual != EstadoProgramacion.CANCELADO,
-            "Un viaje CANCELADO ya no puede cambiar de estado.");
+                "Un viaje CANCELADO ya no puede cambiar de estado.");
 
         if (estadoActual == EstadoProgramacion.PROGRAMADO) {
             Preconditions.checkArgument(nuevoEstado == EstadoProgramacion.EN_RUTA || nuevoEstado == EstadoProgramacion.CANCELADO,
                     "Desde PROGRAMADO solo se puede pasar a EN_RUTA o CANCELADO.");
+
+            if (nuevoEstado == EstadoProgramacion.EN_RUTA) {
+                boolean tieneGuia = guiaRepository.existsByCodigoViajeAndTipoGuia(id, "31");
+                Preconditions.checkArgument(tieneGuia,
+                        "No se puede iniciar la ruta.\nEl viaje no tiene asignada una Guía de Transportista (Tipo 31).");
+            }
+
         } else if (estadoActual == EstadoProgramacion.EN_RUTA) {
             Preconditions.checkArgument(nuevoEstado == EstadoProgramacion.ENTREGADO,
                     "Desde EN_RUTA solo se puede pasar a ENTREGADO.");
@@ -55,9 +62,5 @@ public class MonitoreoServiceImpl implements MonitoreoService {
 
         log.info("El viaje {} cambió de estado de {} a {}", actualizado.getCodigoViaje(), estadoActual, nuevoEstado);
         return ProgramacionResponseDTO.from(actualizado);
-
-        // Buscas el viaje actualizado con todos los JOINs
-//        return monitoreoDao.obtenerViajePorIdConDetalles(id);
     }
-
 }
